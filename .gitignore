@@ -1,0 +1,28 @@
+# .gitignore du projet — TODO 26 (Partie 5), à compléter AVANT le premier commit.
+#
+# Une ligne par fichier ou dossier à exclure du dépôt. Le sujet liste ce qui
+# doit au minimum y figurer : votre environnement virtuel, les caches de Python
+# et de Jupyter, et les données.
+#
+# Les lignes qui commencent par # sont des commentaires : Git les ignore.
+
+# Environnement virtuel
+venv-m01/
+.venv/
+venv/
+env/
+
+# Caches de Python et de pytest
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Caches de Jupyter
+.ipynb_checkpoints/
+
+# Données (non versionnées : à récupérer séparément)
+donnees_m01/
+*.zip
+
+# Fichiers système
+.DS_Store
