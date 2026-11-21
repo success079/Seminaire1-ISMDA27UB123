@@ -45,6 +45,30 @@ def convertir_ventes(ventes: list[dict]) -> list[dict]:
     return ventes
 
 
+def convertir_ventes_robuste(ventes: list[dict]) -> tuple[list[dict], int]:
+    """Convertit les ventes en écartant les lignes illisibles au lieu de s'arrêter.
+
+    Une ligne dont `quantite`, `mois` ou `montant` est vide ou non numérique
+    lève ValueError à la conversion : elle est alors rejetée et comptée.
+    Renvoie (ventes_valides, nombre_de_lignes_rejetees).
+    """
+    valides: list[dict] = []
+    rejetees = 0
+    for v in ventes:
+        try:
+            convertie = {
+                **v,
+                "quantite": int(v["quantite"]),
+                "mois": int(v["mois"]),
+                "montant": float(v["montant"]),
+            }
+        except ValueError:
+            rejetees += 1
+            continue
+        valides.append(convertie)
+    return valides, rejetees
+
+
 def convertir_produits(produits: list[dict]) -> list[dict]:
     """Convertit sur place les colonnes numériques des produits."""
     # TODO 3 : convertir `prix_unitaire` en float et `stock` en int,
@@ -72,8 +96,10 @@ def lignes_orphelines(ventes: list[dict], par_id: dict[str, dict]) -> int:
 # --------------------------------------------------------------- Partie 2
 
 def moyenne(valeurs: list[float]) -> float:
-    """Moyenne arithmétique."""
+    """Moyenne arithmétique. Lève ValueError sur une liste vide."""
     # TODO 6 : la somme des valeurs divisée par leur nombre.
+    if not valeurs:
+        raise ValueError("moyenne d'une liste vide : non définie")
     return sum(valeurs) / len(valeurs)
 
 

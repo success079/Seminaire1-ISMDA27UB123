@@ -8,7 +8,14 @@ Si un test échoue alors qu'il est juste, c'est la fonction qu'on corrige, pas l
 """
 
 import pytest
-from afrishop import covariance, mediane, recherche_dichotomique, variance
+from afrishop import (
+    convertir_ventes_robuste,
+    covariance,
+    mediane,
+    moyenne,
+    recherche_dichotomique,
+    variance,
+)
 
 TOLERANCE = 1e-9   # pour comparer des flottants : abs(a - b) < TOLERANCE, jamais ==
 
@@ -36,5 +43,23 @@ def test_recherche_dichotomique_cible_absente():
     assert recherche_dichotomique([], "P01") == -1    # liste vide
 
 
-# Pour aller plus loin : ajoutez un test sur moyenne([]). Décidez d'abord de ce
-# que la fonction DEVRAIT faire, puis écrivez le test, puis modifiez la fonction.
+# ------------------------------------------------------ Pour aller plus loin
+
+def test_moyenne_liste_vide_leve_valueerror():
+    # Une moyenne de zéro valeur n'a pas de sens : on refuse explicitement
+    # plutôt que de laisser passer un ZeroDivisionError peu parlant.
+    with pytest.raises(ValueError):
+        moyenne([])
+
+
+def test_convertir_ventes_robuste_compte_les_rejets():
+    ventes = [
+        {"id_vente": "V1", "quantite": "2", "mois": "1", "montant": "10.5"},
+        {"id_vente": "V2", "quantite": "1", "mois": "2", "montant": ""},     # vide
+        {"id_vente": "V3", "quantite": "x", "mois": "3", "montant": "5.0"},  # illisible
+        {"id_vente": "V4", "quantite": "3", "mois": "3", "montant": "7.25"},
+    ]
+    valides, rejetees = convertir_ventes_robuste(ventes)
+    assert rejetees == 2
+    assert [v["id_vente"] for v in valides] == ["V1", "V4"]
+    assert valides[0]["quantite"] == 2 and isinstance(valides[0]["montant"], float)
